@@ -1,0 +1,103 @@
+#-------------------------------------------------------------------------------
+# PACKAGE INFO
+#-------------------------------------------------------------------------------
+
+pkgname=gtk3
+pkgdesc="GObject-based multi-platform GUI toolkit"
+license=("LGPL")
+arch=("x86_64")
+
+pkgver=3.24.23
+epoch=1
+pkgrel=1
+
+#-------------------------------------------------------------------------------
+# PACKAGE SOURCES AND DEPENDENCIES
+#-------------------------------------------------------------------------------
+
+source_dir_name="gtk+-${pkgver}"
+source_pkg_name="${source_dir_name}.tar.xz"
+
+source=("http://ftp.gnome.org/pub/gnome/sources/gtk+/3.24/${source_pkg_name}")
+md5sums=('fb383236280fb272ad5eb819f80ceb17')
+
+provides=('gtk3')
+conflicts=('gtk3')
+
+depends=(
+    # MINIMAL REQUIRED DEPENDENCIES
+     'at-spi2-atk>=2.34.2'
+     'fribidi>=1.0.9'
+     'gdk-pixbuf2>=2.40.0'
+     'libepoxy>=1.5.4'
+     'pango>=1.46.1'
+    # OPTIONAL: ARCH (REQUIRED), LFS (RECOMMENDED)
+     "wayland>=1.18.0"                 # A computer display server protocol
+     "wayland-protocols>=1.20"         # Specifications of extended Wayland protocols
+     "libxkbcommon>=1.0.0"             # Keymap handling library for toolkits and window systems
+     "iso-codes>=4.5.0"                # Lists of country, language and currency names
+    # "adwaita-icon-theme>=3.36.1"      # Default GTK3 icon theme
+    # "hicolor-icon-theme>=0.17"        # Freedesktop.org Hicolor icon theme
+    # OPTIONAL: ARCH (REQUIRED), LFS (OPTIONAL)
+     "json-glib>=1.4.4"                # JSON de/serialization
+     "rest>=0.8.1"                     # Helper library for RESTful services
+    # "libcups>=2.3.3"                  # Printing system library
+    # "colord>=1.4.4"                   # Service that manage color profiles for GNOME. HAS POLKIT DEP
+    # OPTIONAL: ARCH (REQUIRED), LFS (NOT MENTIONED)
+     "libxcomposite>=0.4.5"           # X11 Composite extension library
+     "libxcursor>=1.2.0"              # X cursor management library
+     "libxdamage>=1.1.5"              # X11 damaged region extension library
+     "libxi>=1.7.10"                  # X11 Input extension library
+     "libxinerama>=1.1.4"             # X11 Xinerama extension library
+     "libxrandr>=1.5.2"               # X11 RandR extension library
+     "cairo>=1.17.2"                  # 2D graphics library with support for multiple output devices
+     "mesa>=20.1.7"                   # An open-source implementation of the OpenGL specification
+     "desktop-file-utils>=0.26"       # Command line utilities for working with desktop entries
+    # "dconf>=0.36.0"                  # Configuration database system
+     "atk>=2.36.0"                    # Interface definitions of accessibility infrastructure
+     "librsvg>=2.48.8"                # SVG rendering library
+     "libcanberra>=0.30"              # A lightweight implementation of the XDG Sound Theme Specification
+     "shared-mime-info>=2.0"          # Freedesktop.org Shared MIME Info
+     "gtk-update-icon-cache>=3.24.23" # GTK+ icon cache updater
+    # "cantarell-fonts>=0.201"         # Humanist sans serif font
+)
+
+optdepends=()
+
+makedepends=(
+    # MINIMAL REQUIRED MAKE DEPENDENCIES
+    'git'
+    'glib2-docs>=2.66.0'
+    'gobject-introspection>=1.64.1'
+    'gtk-doc>=1.32'
+    'meson>=0.55.3'
+    'sassc>=3.6.1'
+)
+
+#-------------------------------------------------------------------------------
+# PACKAGE RULES
+#-------------------------------------------------------------------------------
+
+prepare() {
+  tar -xvf $source_pkg_name
+}
+
+build() {
+  mkdir -p $source_dir_name/build
+  cd $source_dir_name/build
+  ../configure --prefix=/usr             \
+               --enable-x11-backend      \
+               --disable-wayland-backend \
+               --disable-cloudprint      \
+               --disable-cups            \
+               --disable-papi            \
+               --disable-colord          \
+               --disable-gtk-doc
+  make
+}
+
+package() {
+  cd $source_dir_name/build
+  make DESTDIR="$pkgdir/" install
+}
+
