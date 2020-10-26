@@ -1,0 +1,50 @@
+#-------------------------------------------------------------------------------
+# PKG INFO
+#-------------------------------------------------------------------------------
+
+pkgname=ennbacklight
+pkgver=0.1.0
+pkgrel=1
+
+pkgdesc="A simple backlight control"
+arch=("x86_64")
+
+url="https://github.com/anstellaire/ennbacklight"
+license=("MIT")
+
+provides=('ennbacklight')
+conflicts=()
+replaces=()
+
+depends=()
+optdepends=()
+makedepends=('tar' 'make')
+
+#-------------------------------------------------------------------------------
+# PKG SOURCES
+#-------------------------------------------------------------------------------
+
+tar_name="v$pkgver.tar.gz"
+src_name="$pkgname-$pkgver"
+
+source=("https://github.com/anstellaire/$pkgname/archive/$tar_name")
+md5sums=('3b81f1e6eca60c0bdb76580eda87f591')
+
+#-------------------------------------------------------------------------------
+# PKG RULES
+#-------------------------------------------------------------------------------
+
+prepare() {
+  tar -xvf $tar_name
+}
+
+build() {
+  cd $src_name
+  make
+}
+
+package() {
+  cd $src_name
+  mkdir -p "$pkgdir/usr/bin/"
+  cp $pkgname "$pkgdir/usr/bin/$pkgname"
+}
